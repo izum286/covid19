@@ -1,26 +1,24 @@
 package com.izum286.covid.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.izum286.covid.model.ShortResponse;
-import com.izum286.covid.repos.MainRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 public class ConsumerServiceImpl implements ConsumerService {
 
-    @Autowired
-    ProducerService service;
+//    @Autowired
+//    ProducerService service;
+//
+//    @Autowired
+//    MainRepository repository;
 
-    @Autowired
-    MainRepository repository;
-
-    @Scheduled(fixedRate = 1000)
+    @KafkaListener(topics = "USA")
     @Override
-    public boolean sendToDb() throws JsonProcessingException {
-        ShortResponse response = service.getSummaryByCountry("USA");
-        ShortResponse s = repository.save(response);
+    public boolean sendToDb(String s) throws JsonProcessingException {
+        System.out.println("consumed data "+s + " " + LocalDateTime.now());
         return true;
     }
 }

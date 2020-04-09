@@ -5,11 +5,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.izum286.covid.model.Covid19StatResponse;
 import com.izum286.covid.model.ShortResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -23,6 +27,11 @@ public class ProducerServiceImpl implements ProducerService {
     final String baseUrl = "https://covid-19-coronavirus-statistics.p.rapidapi.com/v1/stats";
     @Autowired
     ObjectMapper objectMapper;
+
+    private static final String TOPIC = "USA";
+
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     @Override
     public List<Covid19StatResponse> getStats(String country) throws JsonProcessingException {
@@ -52,6 +61,7 @@ public class ProducerServiceImpl implements ProducerService {
             death += c.getDeaths();
             recovered+=c.getRecovered();
         }
+        this.kafkaTemplate.send(TOPIC, "USA Death " + death);
         return ShortResponse.builder()
                 .country(country)
                 .confirmed(confirmed)

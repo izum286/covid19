@@ -33,12 +33,12 @@ public class ProducerController {
         return service.getSummaryByCountry(country);
     }
 
-//    @Scheduled(fixedRate = 1000)
-//    @RequestMapping(value = "/getShortScheduled", method = RequestMethod.GET,
-//            produces = MediaType.APPLICATION_JSON_VALUE)
-//    public ShortResponse getSchedule() throws JsonProcessingException {
-//        ShortResponse z = service.getSummaryByCountry("Israel");
-//        System.out.println("done " + z.getDeaths() + " "+ z.getConfirmed());
-//        return z;
-//    }
+    @Scheduled(fixedRate = 1000)
+    @RequestMapping(value = "/getShortScheduled", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ShortResponse getSchedule() throws JsonProcessingException {
+        ShortResponse z = service.getSummaryByCountry("USA");
+        System.out.println("done " + z.getDeaths() + " "+ z.getConfirmed());
+        return z;
+    }
 }
