@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.izum286.covid.model.Covid19StatResponse;
 import com.izum286.covid.model.ShortResponse;
 import com.izum286.covid.services.ProducerService;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,6 +21,8 @@ public class ProducerController {
 
     @Autowired
     ProducerService service;
+
+    private static final Logger LLOG = Logger.getLogger(ProducerController.class.getName());
 
 
     @RequestMapping(value = "/getAllRaw/{country}", method = RequestMethod.GET,
@@ -38,7 +42,7 @@ public class ProducerController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ShortResponse getSchedule() throws JsonProcessingException {
         ShortResponse z = service.getSummaryByCountry("USA");
-        System.out.println("done " + z.getDeaths() + " "+ z.getConfirmed());
+        LLOG.log(Level.INFO, z);
         return z;
     }
 }
