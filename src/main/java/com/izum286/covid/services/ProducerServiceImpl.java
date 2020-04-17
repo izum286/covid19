@@ -33,17 +33,23 @@ public class ProducerServiceImpl implements ProducerService {
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
 
-    @Override
-    public List<Covid19StatResponse> getStats(String country) throws JsonProcessingException {
+
+    private ResponseEntity getResponse(String count){
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.set("x-rapidapi-host", "covid-19-coronavirus-statistics.p.rapidapi.com");
         headers.set("x-rapidapi-key", "aba52e6ff4mshc3d1d6050426c7cp177725jsne78c33c4c028");
         HttpEntity entity = new HttpEntity(headers);
         URI endpoint = UriComponentsBuilder.fromUriString(baseUrl)
-                .queryParam("country", country).build().toUri();
+                .queryParam("country", count).build().toUri();
         ResponseEntity<String> responseEntity = restTemplate.exchange(endpoint, HttpMethod.GET,
                 entity, String.class);
+        return responseEntity;
+    }
+
+    @Override
+    public List<Covid19StatResponse> getStats(String country) throws JsonProcessingException {
+        ResponseEntity<String> responseEntity = getResponse(country);
         JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody());
         String resp = jsonNode.get("data").get("covid19Stats").toString();
         List<Covid19StatResponse> lst = Arrays.asList(objectMapper.readValue(resp, Covid19StatResponse[].class));
