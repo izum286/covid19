@@ -15,10 +15,11 @@ public class ConsumerServiceImpl implements ConsumerService {
 //    @Autowired
 //    MainRepository repository;
 
-    @KafkaListener(topics = "USA")
+//    @KafkaListener(topics = "USA")
     @Override
     public boolean sendToDb(String s) throws JsonProcessingException {
-        System.out.println("consumed data "+s + " " + LocalDateTime.now());
+//        System.out.println("consumed data "+s + " " + LocalDateTime.now());
+        System.out.println("service method invoked");
         return true;
     }
 }
