@@ -5,22 +5,22 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.izum286.covid.model.Covid19StatResponse;
 import com.izum286.covid.model.ShortResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
+import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class ProducerServiceImpl implements ProducerService {
@@ -57,7 +57,7 @@ public class ProducerServiceImpl implements ProducerService {
     }
 
     @Override
-    public ShortResponse getSummaryByCountry(String country) throws JsonProcessingException {
+    public ShortResponse getSummaryByCountry(String country) throws JsonProcessingException, ExecutionException, InterruptedException {
         int confirmed = 0;
         int death = 0;
         int recovered = 0;
@@ -67,7 +67,9 @@ public class ProducerServiceImpl implements ProducerService {
             death += c.getDeaths();
             recovered+=c.getRecovered();
         }
-        this.kafkaTemplate.send(TOPIC, "USA Death " + death);
+
+        ListenableFuture<SendResult<String, String>> future = this.kafkaTemplate.send(TOPIC, "USA Death " + death);
+        SendResult<String, String> result = future.get();
         return ShortResponse.builder()
                 .country(country)
                 .confirmed(confirmed)

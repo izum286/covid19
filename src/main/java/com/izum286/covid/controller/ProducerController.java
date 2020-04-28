@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 public class ProducerController {
@@ -32,14 +33,14 @@ public class ProducerController {
 
     @RequestMapping(value = "/getShort/{country}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ShortResponse getSummaryByCountry(@PathVariable String country) throws JsonProcessingException {
+    public ShortResponse getSummaryByCountry(@PathVariable String country) throws JsonProcessingException, ExecutionException, InterruptedException {
         return service.getSummaryByCountry(country);
     }
 
     @Scheduled(fixedRate = 1000)
     @RequestMapping(value = "/getShortScheduled", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ShortResponse getSchedule() throws JsonProcessingException {
+    public ShortResponse getSchedule() throws JsonProcessingException, ExecutionException, InterruptedException {
         ShortResponse z = service.getSummaryByCountry("USA");
         return z;
     }
